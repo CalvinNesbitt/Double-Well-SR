@@ -21,9 +21,6 @@ epsilons = [10., 1., 0.1, 0.01, 0.001]
 ae_pairs = alpha_eps_pairs(alphas, epsilons)
 alpha, eps = ae_pairs[int(sys.argv[1]) - 1]
 
-# alpha = 0.0 # ON cluster probably want to change this
-# eps = 1.0
-
 c2h=True #looking at cold to hot or reverse?
 
 ################################################################################
@@ -66,7 +63,7 @@ def get_transition_times(file_list):
 def parent_tt_dir(cluster=False):
     "parent save directory"
     if cluster:
-        return #INSERT CLUSTER DIR
+        return '/rds/general/user/cfn18/home/Double-Well-SR/Calculating-Transition-Rate/'
     else:
         return '/Users/cfn18/Desktop/Double-Well-SR/Calculating-Transition-Rate/'
 
