@@ -2,7 +2,6 @@
 This script takes a load of stochastic integrations and identifies the
 transitions in them. It then saves these in a specified directory.
 """
-
 from utilities import *
 import sys
 

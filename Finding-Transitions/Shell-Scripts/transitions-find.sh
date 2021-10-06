@@ -1,4 +1,4 @@
-#PBS -l walltime=72:00:00
+#PBS -l walltime=24:00:00
 #PBS -l select=1:ncpus=8:mem=62gb
 #PBS -N Rotated-Well-Finding-Integrations
 #PBS -J 1-20

@@ -1,8 +1,8 @@
 # Make directory to copy model in to, submit job from there
 NOW=$(date +"%Y-%m-%d-%T")
-run_directory="$EPHEMERAL/Stochastic-Well/$NOW"
+run_directory="$EPHEMERAL/Double-Well-Transitions/$NOW"
 mkdir -p $run_directory
-cp -r $HOME/Instantons/Rotated-2D-Well/Stochastic-Model/Remote-Run/ $run_directory
-cd $run_directory/Remote-Run
-cp $run_directory/Remote-Run/Shell-Scripts/stochastic-well.sh .
-qsub stochastic-well.sh
+cp -r $HOME/Double-Well-SR/Finding-Transitions/ $run_directory
+cd $run_directory/Finding-Transitions/
+cp $run_directory/Finding-Transitions/Shell-Scripts/transitions-find.sh .
+qsub transitions-find.sh
