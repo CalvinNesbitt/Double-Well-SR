@@ -23,7 +23,7 @@ cluster = True
 ################################################################################
 
 # Choose alpha, eps from array jobs
-alpha, eps = alpha_eps_pairs[int(sys.argv[1]) - 1]
+alpha, eps = ae_pairs[int(sys.argv[1]) - 1]
 
 # Initialise list of transitions for fixed a, e pair
 c2h_transitions = []
