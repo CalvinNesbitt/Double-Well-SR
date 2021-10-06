@@ -76,7 +76,7 @@ def integrations_parent_dir(cluster=False):
     if cluster:
         return '/rds/general/user/cfn18/ephemeral/Rotated-2D-Well-Stochastic-Model/'
     else: # on mac
-        return '/Users/cfn18/Desktop/Double-Well-SR/Test-Transition-Data/'
+        return '/Users/cfn18/Desktop/Double-Well-SR/Finding-Transitions/Test-Data/Test-Integration-Data/'
 
 def alpha_eps_pairs(alphas, epsilons):
     "List (a, e) pairs for lists of alphas and epsilons."
@@ -117,7 +117,7 @@ def transition_parent_dir(cluster=False):
     if cluster:
         return '/rds/general/user/cfn18/home/Double-Well-SR/Finding-Transitions/Transition-Data/'
     else:
-        return '/Users/cfn18/Desktop/Double-Well-SR/Transition-Info/'
+        return '/Users/cfn18/Desktop/Double-Well-SR/Finding-Transitions/Test-Data/Test-Transition-Data/'
 
 def transition_dir(alpha, eps, cluster=False):
     "For fixed alpha, eps returns save directory."
