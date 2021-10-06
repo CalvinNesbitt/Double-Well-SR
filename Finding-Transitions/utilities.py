@@ -115,7 +115,7 @@ def xr_files(alpha, eps, cluster=False):
 def transition_parent_dir(cluster=False):
     "Specify parent directory where you save the transitions"
     if cluster:
-        return # WHERE WILL SAVE TRANSITION ON CLUSTER
+        return '/rds/general/user/cfn18/home/Double-Well-SR/Finding-Transitions/Transition-Data/'
     else:
         return '/Users/cfn18/Desktop/Double-Well-SR/Transition-Info/'
 

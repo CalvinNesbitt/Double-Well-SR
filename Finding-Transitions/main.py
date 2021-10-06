@@ -16,7 +16,7 @@ ae_pairs = alpha_eps_pairs(alphas, epsilons)
 ################################################################################
 ## Specify whether we're running on the cluster or not
 ################################################################################
-cluster = False
+cluster = True
 
 ################################################################################
 ## Finding Transitions and saving
