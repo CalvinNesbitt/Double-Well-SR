@@ -1,7 +1,6 @@
 """
-This script takes a load of stochastic integrations and identifies the
-transitions in them. It then saves these in a specified directory.
-Currently it is designed for the double well with possible rotation.
+This script takes a load of stochastic integrations from the rotated double well
+and identifies the transitions in them.
 """
 from utilities import *
 import sys
