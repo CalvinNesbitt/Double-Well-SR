@@ -74,7 +74,7 @@ def ensure_directory_exists(d):
 
 def save_transition_time_data(data, alpha, eps, save_dir, c2h):
     "Save transition time data as a data array."
-    da = xr.DataArray(transition_times, name='Transtion-Time', attrs={'alpha':alpha, 'epsilon':eps})
+    da = xr.DataArray(transition_times, name='Transtion_Time', attrs={'alpha':alpha, 'epsilon':eps})
 
     if c2h:
         save_dir += 'c2h/'
