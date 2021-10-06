@@ -1,6 +1,7 @@
 """
 This script takes a load of stochastic integrations and identifies the
 transitions in them. It then saves these in a specified directory.
+Currently it is designed for the double well with possible rotation.
 """
 from utilities import *
 import sys
@@ -30,7 +31,7 @@ c2h_transitions = []
 h2c_transtions = []
 
 # Loop through hot/cold ensemble files and find transitions
-integration_files = xr_files(a, e, cluster)
+integration_files = xr_files(alpha, eps, cluster)
 for file in integration_files:
     ds = xr.open_dataset(file)
     c2h, h2c = get_transitions(ds, ball_size)
@@ -38,6 +39,6 @@ for file in integration_files:
     h2c_transtions += h2c
 
 # Save Transitions for given alpha, eps
-c2h_save_dir, h2c_save_dir = transition_dir(a, e, cluster)
+c2h_save_dir, h2c_save_dir = transition_dir(alpha, eps, cluster)
 save_list(c2h_transitions, c2h_save_dir)
 save_list(c2h_transitions, h2c_save_dir)
