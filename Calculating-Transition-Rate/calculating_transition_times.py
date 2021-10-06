@@ -1,11 +1,15 @@
 """
 Script opens transitions and saves transition time data as xr.dataarrays.
 """
+cluster=True
 
 import xarray as xr
 import sys
 import os
-sys.path.append('/Users/cfn18/Desktop/Double-Well-SR/Finding-Transitions/')
+if cluster:
+    sys.path.append('/rds/general/user/cfn18/home/Double-Well-SR/Finding-Transitions/')
+else:
+    sys.path.append('/Users/cfn18/Desktop/Double-Well-SR/Finding-Transitions/')
 from utilities import transition_dir, alpha_eps_pairs
 
 ################################################################################
@@ -15,12 +19,12 @@ from utilities import transition_dir, alpha_eps_pairs
 alphas = [0., 0.25, 0.5, 1.]
 epsilons = [10., 1., 0.1, 0.01, 0.001]
 ae_pairs = alpha_eps_pairs(alphas, epsilons)
+alpha, eps = ae_pairs[int(sys.argv[1]) - 1]
 
-alpha = 0.0 # ON cluster probably want to change this
-eps = 1.0
+# alpha = 0.0 # ON cluster probably want to change this
+# eps = 1.0
 
 c2h=True #looking at cold to hot or reverse?
-cluster=False
 
 ################################################################################
 ## Functions for opening transitions
