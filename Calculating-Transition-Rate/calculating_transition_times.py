@@ -1,7 +1,7 @@
 """
 Script opens transitions and saves transition time data as xr.dataarrays.
 """
-cluster=False
+cluster=True
 import xarray as xr
 import sys
 import os
