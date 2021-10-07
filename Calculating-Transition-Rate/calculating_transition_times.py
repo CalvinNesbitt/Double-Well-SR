@@ -31,7 +31,7 @@ def nc_test(file):
     return file[-3:] == '.nc'
 
 def transition_file_list(alpha, eps, c2h=True, cluster=False):
-    c2h_obs_dir, h2c_obs_dir = transition_dir(alpha, eps)
+    c2h_obs_dir, h2c_obs_dir = transition_dir(alpha, eps, cluster=cluster)
 
     if c2h:
         obs_dir = c2h_obs_dir
@@ -91,7 +91,7 @@ def save_transition_time_data(data, alpha, eps, save_dir, c2h):
 ################################################################################
 ## Actually Calculating the transition times and then saving results
 ################################################################################
-transition_files = transition_file_list(alpha, eps, c2h=c2h)
+transition_files = transition_file_list(alpha, eps, c2h=c2h, cluster=cluster)
 transition_times = get_transition_times(transition_files)
 save_dir = parent_tt_dir(cluster) + 'transition-time-data/'
 save_transition_time_data(transition_times, alpha, eps, save_dir, c2h)
