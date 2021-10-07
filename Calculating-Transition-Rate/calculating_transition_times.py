@@ -1,8 +1,7 @@
 """
 Script opens transitions and saves transition time data as xr.dataarrays.
 """
-cluster=True
-
+cluster=False
 import xarray as xr
 import sys
 import os
@@ -15,11 +14,12 @@ from utilities import transition_dir, alpha_eps_pairs
 ################################################################################
 ## Specify Parameters
 ################################################################################
-
-alphas = [0., 0.25, 0.5, 1.]
-epsilons = [10., 1., 0.1, 0.01, 0.001]
-ae_pairs = alpha_eps_pairs(alphas, epsilons)
-alpha, eps = ae_pairs[int(sys.argv[1]) - 1]
+if __name__ == "__main__":
+    cluster=True
+    alphas = [0., 0.25, 0.5, 1.]
+    epsilons = [10., 1., 0.1, 0.01, 0.001]
+    ae_pairs = alpha_eps_pairs(alphas, epsilons)
+    alpha, eps = ae_pairs[int(sys.argv[1]) - 1]
 
 c2h=True #looking at cold to hot or reverse?
 
@@ -91,7 +91,8 @@ def save_transition_time_data(data, alpha, eps, save_dir, c2h):
 ################################################################################
 ## Actually Calculating the transition times and then saving results
 ################################################################################
-transition_files = transition_file_list(alpha, eps, c2h=c2h, cluster=cluster)
-transition_times = get_transition_times(transition_files)
-save_dir = parent_tt_dir(cluster) + 'transition-time-data/'
-save_transition_time_data(transition_times, alpha, eps, save_dir, c2h)
+if __name__ == "__main__":
+    transition_files = transition_file_list(alpha, eps, c2h=c2h, cluster=cluster)
+    transition_times = get_transition_times(transition_files)
+    save_dir = parent_tt_dir(cluster) + 'transition-time-data/'
+    save_transition_time_data(transition_times, alpha, eps, save_dir, c2h)
