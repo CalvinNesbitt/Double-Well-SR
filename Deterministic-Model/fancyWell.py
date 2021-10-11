@@ -31,9 +31,9 @@ class FancyWellIntegrator:
         self.R = np.array([[0, -1], [1, 0]]) # 90 degree rotation matrix
         
         if X_init is None:
-            self.state = rm.normal(scale=np.sqrt(2), size=2)
+            self._state = rm.normal(scale=np.sqrt(2), size=2)
         else:
-            self.state = X_init
+            self._state = X_init
 
     def _rhs_dt(self, t, state):
         return - (np.eye(2) + self.alpha * self.R) @ grad_V(state)
@@ -49,8 +49,18 @@ class FancyWellIntegrator:
         solver_return = scipy.integrate.solve_ivp(self._rhs_dt, (t, t + how_long), IC, dense_output = True)
 
         # Updating variables
-        self.state = solver_return.y[:,-1]
+        self.set_state(solver_return.y[:,-1])
         self.time = t + how_long
+        
+    def set_state(self, x):
+        """x is [X, T]."""
+        self._state =x
+        return
+
+    @property
+    def state(self):
+        """Where we are in phase space."""
+        return self._state
 
     @property
     def parameter_dict(self):
