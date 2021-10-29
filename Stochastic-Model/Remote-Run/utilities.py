@@ -30,18 +30,18 @@ def grad_V(x):
     return np.array([x[0]*(x[0]**2 -1), 2 * x[1]])
 
 def drift(x, p):
-    alpha, eps = p
+    alpha, sigma = p
     return - (np.eye(2) + alpha * R) @ grad_V(x)
 
 def euler_maruyama(x0, t, p, timer=False):
-    alpha, eps = p
+    alpha, sigma = p
     N = len(t)
     x = np.zeros(np.append(N, x0.shape))
     x[0] = x0
     for i in tqdm(range(N-1), disable=not timer):
         dt = t[i+1]-t[i]
         dWt = rm.normal(0, np.sqrt(dt), 2)
-        x[i+1] = x[i] + drift(x[i], p) * dt + np.sqrt(eps) * dWt
+        x[i+1] = x[i] + drift(x[i], p) * dt + sigma * dWt
     return x
 
 ##########################################
