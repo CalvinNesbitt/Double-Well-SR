@@ -47,20 +47,25 @@ def experiment_header(p):
 # Running the experiment
 block_size = 1000 # Size of block before we test for transition
 num_of_blocks = 1000000
+runs_per_sigma = 10
 
 # Results dicitionary
 timing_results = {}
 alphas = [0.0, 0.25, 0.5, 1.0]
+alpha = alphas[0] # For now let's stick to one alpha
 sigmas = [0.5, 0.2, 0.175, 0.15, 0.1, 0.05]# different noise strengths we try
-alpha = alphas[int(sys.argv[1]) - 1]
-for sigma in sigmas: 
+sigma = sigmas[int(sys.argv[1]) - 1]
+
+results_list = []
+for i in range(runs_per_sigma):
     p = [alpha, sigma]
     experiment_header(p)
     for i in tqdm(range(num_of_blocks)):
         result = experiment(p, block_size)
         if result: # Have we found a transition on this block?
-            time_til_transition = block_size * (i+1) * 0.1
+            time_til_transition = block_size * (i+1) 
+            results_list.append(time_til_transition)
             print(f'Transition found within {time_til_transition}')
-            timing_results[sigma] = time_til_transition
+            timing_results[sigma] = results_list
             save_results()
             break
