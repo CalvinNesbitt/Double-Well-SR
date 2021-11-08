@@ -6,66 +6,99 @@ In this notebook we run the stochastic double well for different noise strengths
 We save these in pickle dictionaries.
 """
 
-import os
+# Importing python utilities
+from pathlib import Path
 import sys
-sys.path.append('/rds/general/user/cfn18/home/Double-Well-SR/Stochastic-Model/Remote-Run/')
-from utilities import *
-import numpy as np
-import matplotlib.pyplot as plt
+sys.path.append(str(Path.home()/'python_utilities'))
+from import_helper import *
+
+# Importing Double Well
+add_double_well_dir()
+from stochastic_double_well import *
+from deterministic_double_well import *
+from joblib import Parallel, delayed
+
+import os
 import pickle
+import time as tm
 
-def experiment(p, T):
-    "Test if we go from hot point to cold basin within a given time"
-    hot_ic = np.array([1, 0])
-    alpha, sigma = p
-    time = np.arange(0, T, 0.1)
-    result = euler_maruyama(hot_ic, time, p, timer=False)
-    cold_at_any_point = np.any(result[:, 0] < 0)
-    return cold_at_any_point
+# Experiment Set Up
 
+# Total integration time = number_of_blocks * block_length
+number_of_blocks = int(1.e1) # Setting Experiment Length
+block_length = 100. # How often we check for a transitions
+dt = 0.1
+time = np.arange(0, block_length, dt)
+
+# Experiment Parameters
+alpha = 0
+sigmas = [0.3, 0.25, 0.2, 0.18, 0.16, 0.14, 0.12, 0.1, 0.08, 0.06]
+sigma = sigmas[int(sys.argv[1]) - 1]
+p = [alpha, sigma]
+ic = cold_point 
+
+# Functions Needed for Experiment
+
+def cold_in_ts(x):
+    return np.any(x[:, 0] < 0)
+
+def hot_in_ts(x):
+    return np.any(x[:, 0] > 0)
+
+def update_results():
+    experiment_results['cpu_times(s)'].append(cpu_time)
+    experiment_results['integration_times'].append(integration_time)
+    experiment_results['number_of_transitions'] += 1
+
+def save_directory(alpha):
+    "Returns different if we're on cluster or not"
+    if str(Path.home()) == '/Users/cfn18':
+        return f'/Users/cfn18/Documents/PhD-Work/Third-Year/Instanton-Work/Double-Well-SR/Stochastic-Model/Time-Til-Transition-Test/Timing-Results/alpha_{alpha:.2f}'.replace('.', '_')
+    else:
+        return f'/rds/general/user/cfn18/home/Double-Well-SR/Stochastic-Model/Time-Til-Transition-Test/Timing-Results/alpha_{alpha:.2f}'.replace('.', '_')
+        
 def save_results():
-    "Save timing results in dicitionary indexed by sigma"
-    save_dir = f'/rds/general/user/cfn18/home/Double-Well-SR/Stochastic-Model/Time-Til-Transition-Test/Timing-Results/alpha_{alpha:.2f}/'.replace('.', '_')
+    save_dir = save_directory(alpha)
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
-    with open(save_dir + 'results.pickle', 'wb') as handle:
-        pickle.dump(timing_results, handle, protocol=pickle.HIGHEST_PROTOCOL)
-    print(f'\nSaved Results at {save_dir}/results.pickle\n')
-    
-def load_results(alpha):
-    "Load timing results for particular alpha"
-    save_dir = f'/rds/general/user/cfn18/home/Double-Well-SR/Stochastic-Model/Time-Til-Transition-Test/Timing-Results/alpha_{alpha:.2f}/'.replace('.', '_')
-    with open(save_dir + 'results.pickle', 'rb') as handle:
-        return pickle.load(handle)
+    with open(save_dir + f'/sigma_{sigma:.3f}_results.pickle'.replace('.', '_'), 'wb') as handle:
+        pickle.dump(experiment_results, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    print(f'\nSaved Results at {save_dir}/sigma_{sigma:.3f}_results.pickle\n')
 
 def experiment_header(p):
     print('\n***RUNNING EXPERIMENT****')
     print()
     print(f'alpha = {alpha}, sigma  = {sigma}')
     print()
+    
+def load_results(alpha):
+    results = []
+    pd = save_dir(alpha)
+    for f in os.listdir(pd):
+        with open(save_dir(alpha) + '/' + f, 'rb') as handle:
+            results.append(pickle.load(handle))
+    return results
 
-# Running the experiment
-block_size = 1000 # Size of block before we test for transition
-num_of_blocks = 1000000
-runs_per_sigma = 10
+# Running the Experiment
 
-# Results dicitionary
-timing_results = {}
-alphas = [0.0, 0.25, 0.5, 1.0]
-alpha = alphas[0] # For now let's stick to one alpha
-sigmas = [0.5, 0.2, 0.175, 0.15, 0.1, 0.05]# different noise strengths we try
-sigma = sigmas[int(sys.argv[1]) - 1]
+# Initialising Results
+experiment_results = {'sigma': sigma, 'cpu_times(s)': [], 'integration_times': [], 'number_of_transitions': 0}
+last_success_block = 0 
 
-results_list = []
-for i in range(runs_per_sigma):
-    p = [alpha, sigma]
-    experiment_header(p)
-    for i in tqdm(range(num_of_blocks)):
-        result = experiment(p, block_size)
-        if result: # Have we found a transition on this block?
-            time_til_transition = block_size * (i+1) 
-            results_list.append(time_til_transition)
-            print(f'Transition found within {time_til_transition}')
-            timing_results[sigma] = results_list
-            save_results()
-            break
+# Looped Search for Transitions
+experiment_header(p)
+for i in range(number_of_blocks):
+    start = tm.time()
+    ts = double_well_em(ic, time, p)
+    end = tm.time()
+    ic = ts[-1]
+    
+    if hot_in_ts(ts): # Have we found a transition in last block?
+        cpu_time = end - start
+        integration_time = (i - last_success_block + 1) * time[-1]
+        update_results()
+        save_results()
+        
+        # Reset Experiment
+        ic = cold_point
+        last_success_block = i

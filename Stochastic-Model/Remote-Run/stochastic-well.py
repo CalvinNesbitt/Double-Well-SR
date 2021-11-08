@@ -1,7 +1,7 @@
 ##########################################
 ## TO DO PRE SUBMITTING:
 ## - Set Parameters
-## - Set save_directory 
+## - Set save_directory
 ## - Update PBS Name + settings in other shell script
 ##########################################
 
@@ -60,7 +60,7 @@ save_directory = parent_dir + alpha_sub_dir + eps_sub_dir
 if not os.path.exists(save_directory):
     os.makedirs(save_directory + '/cold-ensemble')
     os.makedirs(save_directory + '/hot-ensemble')
-    
+
 ##########################################
 ## Running and Saving in Blocks
 ##########################################
@@ -73,16 +73,16 @@ hot_ensemble = []
 bl = int(block_len/2) # half of points start in each basin
 
 for i in range(blocks):
-    
+
     print(f'Running Block {i}\n')
-    
+
     for k in range(bl):
         ensemble_member = bl * i + k + 1
         cold_ensemble.append(euler_maruyama(cold_point, time, p))
         hot_ensemble.append(euler_maruyama(hot_point, time, p))
-        
+
     # Save and clear
-    
+
     save_ensemble(cold_ensemble, time, p, save_directory + f'cold-ensemble/{i + 1}')
     save_ensemble(hot_ensemble, time, p, save_directory + f'hot-ensemble/{i + 1}')
     cold_ensemble = []

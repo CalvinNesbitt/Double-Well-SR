@@ -1,7 +1,7 @@
 #PBS -l walltime=24:00:00
 #PBS -l select=1:ncpus=2:mem=20gb
 #PBS -N Double-Well-Timings
-#PBS -J 1-5
+#PBS -J 1-10
 
 module load anaconda3/personal
 source activate personalpy3
