@@ -31,8 +31,8 @@ dt = 0.1
 time = np.arange(0, block_length, dt)
 
 # Experiment Parameters
-alpha = 0.1
-sigmas = [0.4, 0.3, 0.25, 0.2, 0.18, 0.16, 0.14, 0.12, 0.1, 0.08, 0.06]
+alpha = 0.
+sigmas = [0.3, 0.25, 0.2, 0.19, 0.18, 0.17, 0.16, 0.15, 0.14, 0.13]
 ic = cold_point 
 
 # Functions Needed for Experiment
@@ -91,8 +91,8 @@ if __name__ == "__main__":
 
     # Looped Search for Transitions
     experiment_header(p)
+    start = tm.time()
     for i in range(number_of_blocks):
-        start = tm.time()
         ts = double_well_em(ic, time, p)
         ic = ts[-1]
 
@@ -112,3 +112,4 @@ if __name__ == "__main__":
             # Reset Experiment
             ic = cold_point
             last_success_block = i
+            start = tm.time()
