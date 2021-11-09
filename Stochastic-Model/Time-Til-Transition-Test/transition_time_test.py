@@ -33,8 +33,6 @@ time = np.arange(0, block_length, dt)
 # Experiment Parameters
 alpha = 0.1
 sigmas = [0.4, 0.3, 0.25, 0.2, 0.18, 0.16, 0.14, 0.12, 0.1, 0.08, 0.06]
-sigma = sigmas[int(sys.argv[1]) - 1]
-p = [alpha, sigma]
 ic = cold_point 
 
 # Functions Needed for Experiment
@@ -62,7 +60,7 @@ def save_results():
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     with open(save_dir + f'/sigma_{sigma:.3f}_results'.replace('.', '_') + '.pickle', 'wb') as handle:
-        pickle.dump(experiment_results, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(experiment_results, handle)
     print(f'\nSaved Results at {save_dir}/sigma_{sigma:.3f}_results.pickle\n')
 
 def experiment_header(p):
@@ -73,32 +71,41 @@ def experiment_header(p):
     
 def load_results(alpha):
     results = []
-    pd = save_dir(alpha)
+    pd = save_directory(alpha)
     for f in os.listdir(pd):
-        with open(save_dir(alpha) + '/' + f, 'rb') as handle:
+        with open(pd + '/' + f, 'rb') as handle:
             results.append(pickle.load(handle))
     return results
 
 # Running the Experiment
-
-# Initialising Results
-experiment_results = {'sigma': sigma, 'cpu_times(s)': [], 'integration_times': [], 'number_of_transitions': 0}
-last_success_block = 0 
-
-# Looped Search for Transitions
-experiment_header(p)
-for i in range(number_of_blocks):
-    start = tm.time()
-    ts = double_well_em(ic, time, p)
-    end = tm.time()
-    ic = ts[-1]
+if __name__ == "__main__":
+    sigma = sigmas[int(sys.argv[1]) - 1]
+    p = [alpha, sigma]
     
-    if hot_in_ts(ts): # Have we found a transition in last block?
-        cpu_time = end - start
-        integration_time = (i - last_success_block + 1) * time[-1]
-        update_results()
-        save_results()
-        
-        # Reset Experiment
-        ic = cold_point
-        last_success_block = i
+    # Initialising Results
+    experiment_results = {'sigma': sigma, 'cpu_times(s)': [], 'integration_times': [], 'number_of_transitions': 0}
+    last_success_block = 0 
+
+    # Looped Search for Transitions
+    experiment_header(p)
+    for i in range(number_of_blocks):
+        start = tm.time()
+        ts = double_well_em(ic, time, p)
+        ic = ts[-1]
+
+        if hot_in_ts(ts): # Have we found a transition in last block?
+            end = tm.time()
+            cpu_time = end - start
+            integration_time = (i - last_success_block + 1) * time[-1]
+            update_results()
+            save_results()
+
+            # Check if we have enough samples
+            if experiment_results['number_of_transitions'] == 100:
+                print(f'Found 100 transitions - will quit.')
+                quit()  
+           
+
+            # Reset Experiment
+            ic = cold_point
+            last_success_block = i
