@@ -72,7 +72,10 @@ def experiment_header(p):
 def load_results(alpha):
     results = []
     pd = save_directory(alpha)
-    for f in os.listdir(pd):
+    files = os.listdir(pd)
+    files.sort()
+    files.reverse()
+    for f in files:
         with open(pd + '/' + f, 'rb') as handle:
             results.append(pickle.load(handle))
     return results
