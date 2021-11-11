@@ -1,7 +1,7 @@
-#PBS -l walltime=00:30:00
-#PBS -l select=1:ncpus=8:mem=10gb
+#PBS -l walltime=72:00:00
+#PBS -l select=1:ncpus=1:mem=96gb
 #PBS -N Stochastic-Well-Simulation
-#PBS -J 1-4
+#PBS -J 1-20
 
 module load anaconda3/personal
 source activate personalpy3

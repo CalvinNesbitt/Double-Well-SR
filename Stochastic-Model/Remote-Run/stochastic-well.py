@@ -46,7 +46,7 @@ alpha, sigma = alpha_sigmas_pairs[int(sys.argv[1]) - 1]
 
 # Integration Length
 dt = 0.1
-T = int(1.e0) # reccomend 10**8 for sigma=0.18
+T = int(1.e8) # reccomend 10**8 for sigma=0.18
 time = np.arange(0, T, dt)
 
 p = [alpha, sigma]
@@ -56,7 +56,7 @@ p = [alpha, sigma]
 ##########################################
 
 # How many times should we run each integration 
-number_of_integrations = 100
+number_of_integrations = 1000
 
 # Where We Save Output
 parent_dir = f'/rds/general/user/cfn18/ephemeral/Rotated-2D-Well-Stochastic-Model/'
