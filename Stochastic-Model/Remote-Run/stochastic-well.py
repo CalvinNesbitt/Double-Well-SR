@@ -25,6 +25,7 @@ from stochastic_double_well import *
 import os
 import numpy.random as rm
 import time as tm
+import xarray as xr
 
 ##########################################
 ## Setting Parameters
@@ -38,10 +39,10 @@ ic = cold_point
 alpha_sigmas_pairs = []
 for alpha in alphas:
     for sigma in sigmas:
-        alpha_sigma_pairs.append((alpha, sigma))
+        alpha_sigmas_pairs.append((alpha, sigma))
 
 # Use array jobs to decide input
-alpha, sigma = alpha_sigma_pairs[int(sys.argv[1]) - 1]
+alpha, sigma = alpha_sigmas_pairs[int(sys.argv[1]) - 1]
 
 # Integration Length
 dt = 0.1
@@ -59,14 +60,14 @@ number_of_integrations = 100
 
 # Where We Save Output
 parent_dir = f'/rds/general/user/cfn18/ephemeral/Rotated-2D-Well-Stochastic-Model/'
-alpha_sub_dir = f'alpha_{alpha}/'.replace('.', '_')
+alpha_sub_dir = f'/alpha_{alpha}/'.replace('.', '_')
 sigma_sub_dir = f'sigma_{sigma}/'.replace('.', '_')
-if ic == cold_point:
+if ic is cold_point:
     ic_sub_sir = 'cold_ic/'
-elif ic == hot_point:
+elif ic is hot_point:
     ic_sub_sir = 'hot_ic/'
 
-save_directory = parent_dir + alpha_sub_dir + sigma_sub_dir + ic_sub_sir
+save_directory = str(parent_dir) + alpha_sub_dir + sigma_sub_dir + ic_sub_sir
 
 if not os.path.exists(save_directory):
     os.makedirs(save_directory)
@@ -97,13 +98,11 @@ def save_result():
 
 print('**STARTING INTEGRATION**\n')
 
-bl = int(block_len/2) # half of points start in each basin
-
 for i in range(number_of_integrations):
 
     print(f'Running Integration {i} of {number_of_integrations}\n')
     start = tm.time()
-    integration_result = euler_maruyama(ic, time, p)
+    integration_result = double_well_em(ic, time, p)
     end = tm.time()
     time_in_hours = (end - start)/60**2
     print(f'Integration {i} took approximately {time_in_hours:.2g} hours.')
