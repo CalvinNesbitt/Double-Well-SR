@@ -18,6 +18,12 @@ def double_well_em(x0, t, p, timer=False):
         x[i+1] = x[i] + warped_well(x[i], alpha) * dt + sigma * dWt
     return x
 
+def em_step(x0, dt, p):
+    alpha, sigma = p
+    dWt = rm.normal(0, np.sqrt(dt), 2)
+    x1 = x0 + warped_well(x0, p) * dt + sigma * dWt
+    return x1
+
 def double_well_ensemble_simulation(ic_list, time, p, multiprocess=True):
     results = []
 
