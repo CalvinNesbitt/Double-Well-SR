@@ -4,14 +4,33 @@ import xarray as xr
 import numpy.random as rm
 from tqdm.notebook import tqdm
 
+# ------------------------------------------
+# Potential/Dynamics Definition
+# ------------------------------------------
 
-# Defining the Potential
+# Numpy
 
-def V(x):
+def potential(x):
     return 0.25 * (x[0]**2 - 1)**2 + x[1]**2
 
 def grad_V(x):
     return np.array([x[0]*(x[0]**2 -1), 2 * x[1]])
+
+R = np.array([[0, -1], [1, 0]]) # 90 degree rotation matrix
+
+def drift(x, s):
+    alpha, eps = s
+    return - np.matmul((np.eye(2) + alpha * R), grad_V(x))
+
+# jNumpy
+import jax.numpy as jnp
+
+def jax_grad_V(x):
+    return jnp.array([x[0]*(x[0]**2 -1), 2 * x[1]])
+
+def jax_drift(x, s):
+    alpha, eps = s
+    return - jnp.matmul((jnp.eye(2) + alpha * R), jax_grad_V(x))
 
 
 # ------------------------------------------
@@ -28,7 +47,7 @@ class FancyWellIntegrator:
 
         self.alpha = alpha
         self.time = 0
-        self.R = np.array([[0, -1], [1, 0]]) # 90 degree rotation matrix
+        self.R = R
         
         if X_init is None:
             self._state = rm.normal(scale=np.sqrt(2), size=2)
@@ -36,7 +55,7 @@ class FancyWellIntegrator:
             self._state = X_init
 
     def _rhs_dt(self, t, state):
-        return - (np.eye(2) + self.alpha * self.R) @ grad_V(state)
+        return drift(state, [self.alpha, 0])
 
     def integrate(self, how_long):
         """time: how long we integrate for in adimensional time."""
