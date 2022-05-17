@@ -29,6 +29,7 @@ from tqdm.notebook import tqdm
 
 R = np.array([[0, -1], [1, 0]]) # 90 degree rotation matrix
 
+# Numpy
 def V(x):
     return 0.25 * (x[0]**2 - 1)**2 + x[1]**2
 
@@ -37,6 +38,15 @@ def grad_V(x):
 
 def warped_well(x, alpha):
     return - (np.eye(2) + alpha * R) @ grad_V(x)
+
+# jNumpy
+import jax.numpy as jnp
+def jax_grad_V(x):
+    return jnp.array([x[0]*(x[0]**2 -1), 2 * x[1]])
+
+def jax_warped_well(x, s):
+    alpha, eps = s
+    return - jnp.matmul((jnp.eye(2) + alpha * R), jax_grad_V(x))
 
 ##########################################
 ## Fixed points
@@ -61,7 +71,7 @@ class FancyWellIntegrator:
 
         self.alpha = alpha
         self.time = 0
-        
+
         if X_init is None:
             self._state = rm.normal(scale=np.sqrt(2), size=2)
         else:
@@ -83,7 +93,7 @@ class FancyWellIntegrator:
         # Updating variables
         self.set_state(solver_return.y[:,-1])
         self.time = t + how_long
-        
+
     def set_state(self, x):
         """x is [X, T]."""
         self._state =x
@@ -100,7 +110,7 @@ class FancyWellIntegrator:
         'alpha': self.alpha,
         }
         return param
-    
+
 # ------------------------------------------
 # TrajectoryObserver
 # ------------------------------------------
@@ -168,7 +178,7 @@ class TrajectoryObserver():
         print(f'Observations written to {save}. Erasing personal log.\n')
         self.wipe()
         self.dump_count +=1
-        
+
 # ------------------------------------------
 # make_observations
 # ------------------------------------------

@@ -7,14 +7,15 @@ Also includes example run script
 Example run of MAM for the 2D Double Well.
 """
 
-###################################################
-## Importing MAM Code
-###################################################
-
+# Standard Dependencies
 import sys
 import os
 import time as tm
 import xarray as xr
+
+###################################################
+## Importing MAM Code
+###################################################
 mam_code_location = '/Users/cfn18/Documents/PhD-Work/Third-Year/Instanton-Work/Action-Minimisation-Algorithm/'
 sys.path.append(mam_code_location)
 from fw_action import *
@@ -25,16 +26,15 @@ from mam import *
 ###################################################
 
 # Drift
-double_well_file = '/Users/cfn18/Documents/PhD-Work/Third-Year/Instanton-Work/Double-Well-SR/Deterministic-Model/'
+double_well_file = '/Users/cfn18/Documents/PhD-Work/Third-Year/Instanton-Work/Double-Well-SR/'
 sys.path.append(double_well_file)
-from fancyWell import jax_drift
-drift = jax_drift
+from deterministic_double_well import jax_warped_well
+drift = jax_warped_well
 
-# Diffusion
+# Diffusion Definition
 import jax.numpy as jnp
 def diff_inv(x, s):
     return jnp.eye(2, 2)
-
 
 ###################################################
 ## Example Run
@@ -206,7 +206,7 @@ class doubleWellMAMO:
         "Parameters used for a run. Access by instanton"
 
         # Unpack parameters and put in labelled dictionary
-        alpha = self.mj.p
+        alpha = self.mj.p[0]
         param = {
         'alpha' : alpha,
         'iteration': self.mj.nit
