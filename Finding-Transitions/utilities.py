@@ -7,6 +7,7 @@ import xarray as xr
 import numpy as np
 import sys
 from tqdm import tqdm
+import glob
 
 ################################################################################
 ## Functions for finding transitions
@@ -63,50 +64,26 @@ def get_transitions(ds, ball_size=0.1):
     "Gets transitions both ways for a given dataset"
     c2h = []
     h2c = []
-    for r in tqdm(ds.realisation):
-        ts = ds.sel(realisation=r).drop('realisation')
-        c2h += cold_to_hot_transitions(ts, ball_size)
-        h2c += hot_to_cold_transitions(ts, ball_size)
+    c2h += cold_to_hot_transitions(ds, ball_size)
+    h2c += hot_to_cold_transitions(ds, ball_size)
     return c2h, h2c
 
 ################################################################################
 ## Functions for loading integration files
 ################################################################################
-def integrations_parent_dir(cluster=False):
-    if cluster:
-        return '/rds/general/user/cfn18/ephemeral/Rotated-2D-Well-Stochastic-Model/'
-    else: # on mac
-        return '/Users/cfn18/Desktop/Double-Well-SR/Finding-Transitions/Test-Data/Test-Integration-Data/'
-
-def alpha_eps_pairs(alphas, epsilons):
+def alpha_sigma_pairs(alphas, sigmas):
     "List (a, e) pairs for lists of alphas and epsilons."
-    alpha_eps_pairs = []
+    alpha_sigma_pairs = []
     for alpha in alphas:
-        for eps in epsilons:
-            alpha_eps_pairs.append((alpha, eps))
-    return alpha_eps_pairs
+        for sigma in sigmas:
+            alpha_sigma_pairs.append((alpha, sigma))
+    return alpha_sigma_pairs
 
-def integration_directories(alpha, eps, cluster=False):
-    "Returns the list of integraiton directories for fixed alpha, eps"
-    p_dir = integrations_parent_dir(cluster)
-    alpha_sub_dir = f'alpha_{alpha}/'.replace('.', '_')
-    eps_sub_dir = f'eps_{eps}/'.replace('.', '_')
-    transition_directory = p_dir + alpha_sub_dir + eps_sub_dir
-    return [transition_directory + x for x in ['cold-ensemble/', 'hot-ensemble/']]
+def integration_directory(alpha, sigma):
+    return f'/rds/general/user/cfn18/ephemeral/Rotated-2D-Well-Stochastic-Model/alpha_{alpha}/sigma_{sigma}/cold_ic/'.replace('.', '_')
 
-def list_directory(d):
-    "Returns list of files in directory with directory location."
-    files = []
-    for f in os.listdir(d):
-        files.append(d + f)
-    return files
-
-def xr_files(alpha, eps, cluster=False):
-    "Get all xr integration files for fixed alpha, eps."
-    files = []
-    for d in integration_directories(alpha, eps, cluster):
-        files += list_directory(d)
-    return files
+def xr_files(alpha, sigma):
+    return glob.glob(integration_directory(alpha, sigma) + '*.nc')
 
 ################################################################################
 ## Functions for saving transition files
@@ -115,16 +92,16 @@ def xr_files(alpha, eps, cluster=False):
 def transition_parent_dir(cluster=False):
     "Specify parent directory where you save the transitions"
     if cluster:
-        return '/rds/general/user/cfn18/home/Double-Well-SR/Finding-Transitions/Transition-Data/'
+        return '/rds/general/user/cfn18/ephemeral/Rotated-2D-Well-Transition-Data/'
     else:
         return '/Users/cfn18/Desktop/Double-Well-SR/Finding-Transitions/Test-Data/Test-Transition-Data/'
 
-def transition_dir(alpha, eps, cluster=False):
-    "For fixed alpha, eps returns save directory."
+def transition_dir(alpha, sigma, cluster=False):
+    "For fixed alpha, sigma returns save directory."
     p_dir = transition_parent_dir(cluster)
     alpha_sub_dir = f'alpha_{alpha}/'.replace('.', '_')
-    eps_sub_dir = f'eps_{eps}/'.replace('.', '_')
-    transition_directory = p_dir + alpha_sub_dir + eps_sub_dir
+    sigma_sub_dir = f'sigma_{sigma}/'.replace('.', '_')
+    transition_directory = p_dir + alpha_sub_dir + sigma_sub_dir
 
     directories = [transition_directory + x for x in ['cold-to-hot/', 'hot-to-cold/']]
     for d in directories:
