@@ -113,11 +113,12 @@ def run_additive_mam_double_well(alpha, inst_ic, time, save_location, bounds=Non
     # Observer object
     print('\n*** Setting up MAM observer. *** \n')
     observer = doubleWellMAMO(mamjax, save_location)
-    mamjax.run({'maxiter': 0, 'maxfun': 0}) # initialise result object to be observed
-    mamjax.nit = 0
-    observer.save_instanton_snapshot()
-    observer.save_av()
-    observer.save_status()
+    # mamjax.run({'maxiter': 0, 'maxfun': 0}) # initialise result object to be observed
+    # mamjax.nit = 0
+    observer.save_instanton_ic()
+    # observer.save_instanton_snapshot()
+    # observer.save_av()
+    # observer.save_status()
 
     ##########################################
     ## Running and Saving in Blocks
@@ -279,4 +280,22 @@ class doubleWellMAMO:
         # Save Instanton
         instanton.to_netcdf(self.pd + f'/Instanton.nc')
         print('\nInstanton saved at ' + self.pd + f'/Instanton.nc')
+        return
+
+    def save_instanton_ic(self):
+        "Saves instanton ic."
+
+        # Put Instanton in xr form
+        dic = {}
+        _time = self.mj.time
+        _X = self.mj.instanton[:, 0]
+        _Y = self.mj.instanton[:, 1]
+        dic['X'] = xr.DataArray(_X, dims=['time'], name='X', coords = {'time': _time})
+        dic['Y'] = xr.DataArray(_Y, dims=['time'], name='Y', coords = {'time': _time})
+
+        instanton = xr.Dataset(dic, attrs= self.parameters)
+
+        # Save Instanton
+        instanton.to_netcdf(self.pd + f'/Instanton_IC.nc')
+        print('\nInstanton saved at ' + self.pd + f'/Instanton_IC.nc')
         return

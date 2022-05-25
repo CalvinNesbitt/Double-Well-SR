@@ -165,7 +165,10 @@ class DoubleWellPath:
         ax.set_ylabel('Y')
 
         if arrow:
-            add_arrow(self, fax=[fig, ax], color=kwargs.pop('c'))
+            try:
+                add_arrow(self, fax=[fig, ax], color=kwargs.pop('c'))
+            except:
+                add_arrow(self, fax=[fig, ax])
         return fig, ax
 
     def X_timeseries_plot(self, fax=None, *args, **kwargs):

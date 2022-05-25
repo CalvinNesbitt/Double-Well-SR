@@ -149,9 +149,9 @@ class TrajectoryObserver():
 
         dic = {}
         _time = self.time_obs
-        dic['x'] = xr.DataArray(self.x_obs, dims=['time'], name='X',
+        dic['X'] = xr.DataArray(self.x_obs, dims=['time'], name='X',
                                 coords = {'time': _time})
-        dic['y'] = xr.DataArray(self.y_obs, dims=['time'], name='Y',
+        dic['Y'] = xr.DataArray(self.y_obs, dims=['time'], name='Y',
                                 coords = {'time': _time})
         return xr.Dataset(dic, attrs= self._parameters)
 
